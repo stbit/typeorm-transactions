@@ -13,6 +13,10 @@ export const factoryTransactionDecorator = (dataSource: DataSource) => {
       const originalMethod = descriptor.value
 
       descriptor.value = function (...args: any[]) {
+        if (context.getStore()) {
+          return originalMethod.apply(this, args)
+        }
+
         const store = new Map<string, EntityManager>()
 
         return context.run(store, () => {
