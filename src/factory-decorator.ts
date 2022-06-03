@@ -12,14 +12,14 @@ export const factoryTransactionDecorator = (dataSource: DataSource) => {
     return (target: any, methodName: string | symbol, descriptor: TypedPropertyDescriptor<any>) => {
       const originalMethod = descriptor.value
 
-      descriptor.value = function (...args: any[]) {
+      descriptor.value = async function (...args: any[]) {
         if (context.getStore()) {
-          return originalMethod.apply(this, args)
+          return await originalMethod.apply(this, args)
         }
 
         const store = new Map<string, EntityManager>()
 
-        return context.run(store, () => {
+        return await context.run(store, () => {
           return dataSource.transaction(async (manager) => {
             store.set('manager', manager)
 

@@ -9,9 +9,12 @@ const factoryTransactionDecorator = (dataSource) => {
     return function Transactional() {
         return (target, methodName, descriptor) => {
             const originalMethod = descriptor.value;
-            descriptor.value = function (...args) {
+            descriptor.value = async function (...args) {
+                if (context.getStore()) {
+                    return await originalMethod.apply(this, args);
+                }
                 const store = new Map();
-                return context.run(store, () => {
+                return await context.run(store, () => {
                     return dataSource.transaction(async (manager) => {
                         store.set('manager', manager);
                         return await originalMethod.apply(this, args);
