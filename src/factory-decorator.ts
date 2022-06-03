@@ -4,7 +4,7 @@ import { IsolationLevel } from "typeorm/driver/types/IsolationLevel";
 import type { Store } from "./typings/store";
 import { wrapDataSource } from "./wrap-data-source";
 
-interface TransactionalOptions {
+export interface TransactionalOptions {
   isolationLevel?: IsolationLevel
 }
 
