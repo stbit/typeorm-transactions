@@ -1,8 +1,8 @@
 import { Repository, DataSource, EntityManager, EntityTarget } from 'typeorm'
 import { AsyncLocalStorage } from 'node:async_hooks'
-import type { Store } from './typings/store'
+import { StoreTransaction } from './store'
 
-export const wrapDataSource = (dataSource: DataSource, context: AsyncLocalStorage<Store>) => {
+export const wrapDataSource = (dataSource: DataSource, context: AsyncLocalStorage<StoreTransaction | undefined>) => {
   const repositories = (dataSource.manager as any).repositories as any[]
   const getRepositoryOriginal = dataSource.getRepository
   const hookRepositoryManager = <T>(repository: Repository<T>): void => {
@@ -10,7 +10,7 @@ export const wrapDataSource = (dataSource: DataSource, context: AsyncLocalStorag
 
     Object.defineProperty(repository, 'manager', {
       get() {
-        return context.getStore()?.get('manager') || originalManager
+        return context.getStore()?.manager || originalManager
       },
       set(manager: EntityManager) {
         originalManager = manager

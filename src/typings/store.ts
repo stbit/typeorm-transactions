@@ -1,3 +1,1 @@
-import { EntityManager } from "typeorm";
-
-export type Store = Map<string, EntityManager> | undefined
+export type HookType = () => void

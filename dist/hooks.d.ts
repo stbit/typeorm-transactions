@@ -1,0 +1,10 @@
+import { AsyncLocalStorage } from "node:async_hooks";
+import { StoreTransaction } from "./store";
+import { HookType } from "./typings/store";
+export declare const addStoreToHooks: (store: AsyncLocalStorage<StoreTransaction | undefined>) => void;
+export declare const runOnTransactionCommit: (callback: HookType) => void;
+export declare const runOnTransactionRollback: (callback: HookType) => void;
+export declare const runOnTransactionComplete: (callback: HookType) => void;
+export declare const emitTransactionCommit: () => void;
+export declare const emitTransactionRollback: () => void;
+export declare const emitTransactionComplete: () => void;

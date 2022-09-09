@@ -9,7 +9,7 @@ const wrapDataSource = (dataSource, context) => {
         Object.defineProperty(repository, 'manager', {
             get() {
                 var _a;
-                return ((_a = context.getStore()) === null || _a === void 0 ? void 0 : _a.get('manager')) || originalManager;
+                return ((_a = context.getStore()) === null || _a === void 0 ? void 0 : _a.manager) || originalManager;
             },
             set(manager) {
                 originalManager = manager;

@@ -1,7 +1,8 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { DataSource, EntityManager } from "typeorm";
 import { IsolationLevel } from "typeorm/driver/types/IsolationLevel";
-import type { Store } from "./typings/store";
+import { emitTransactionCommit, emitTransactionComplete, emitTransactionRollback } from "./hooks";
+import { StoreTransaction } from "./store";
 import { wrapDataSource } from "./wrap-data-source";
 
 export interface TransactionalOptions {
@@ -9,7 +10,7 @@ export interface TransactionalOptions {
 }
 
 export const factoryTransactionDecorator = (dataSource: DataSource) => {
-  const context = new AsyncLocalStorage<Store | undefined>()
+  const context = new AsyncLocalStorage<StoreTransaction | undefined>()
 
   wrapDataSource(dataSource, context)
 
@@ -24,14 +25,26 @@ export const factoryTransactionDecorator = (dataSource: DataSource) => {
           return await originalMethod.apply(this, args)
         }
 
-        const store = new Map<string, EntityManager>()
+        const store = new StoreTransaction()
 
-        return await context.run(store, () => {
-          return dataSource.transaction(isolationLevel , async (manager) => {
-            store.set('manager', manager)
+        return await context.run(store, async () => {
+          try {
+            const resultTransaction = await dataSource.transaction(isolationLevel , async (manager) => {
+              store.manager = manager
 
-            return await originalMethod.apply(this, args)
-          })
+              return await originalMethod.apply(this, args)
+            })
+
+            emitTransactionCommit()
+            emitTransactionComplete()
+
+            return resultTransaction
+          } catch (e) {
+            emitTransactionRollback()
+            emitTransactionComplete()
+
+            throw e
+          }
         })
       }
 
