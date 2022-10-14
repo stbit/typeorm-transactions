@@ -4,22 +4,23 @@ exports.wrapDataSource = void 0;
 const wrapDataSource = (dataSource, context) => {
     const repositories = dataSource.manager.repositories;
     const getRepositoryOriginal = dataSource.getRepository;
-    const hookRepositoryManager = (repository) => {
-        let originalManager = repository.manager;
-        Object.defineProperty(repository, 'manager', {
+    const replaceManager = (target) => {
+        let originalManager = target.manager;
+        Object.defineProperty(target, 'manager', {
             get() {
                 var _a;
                 return ((_a = context.getStore()) === null || _a === void 0 ? void 0 : _a.manager) || originalManager;
             },
             set(manager) {
                 originalManager = manager;
-            }
+            },
         });
     };
-    repositories.forEach(hookRepositoryManager);
+    replaceManager(dataSource);
+    repositories.forEach(replaceManager);
     dataSource.getRepository = (target) => {
         const repository = getRepositoryOriginal.call(dataSource, target);
-        hookRepositoryManager(repository);
+        replaceManager(repository);
         return repository;
     };
 };
