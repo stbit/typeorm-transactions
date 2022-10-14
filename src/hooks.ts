@@ -20,6 +20,10 @@ export const runOnTransactionComplete = (callback: HookType) => {
   stores.forEach((store) => store.getStore()?.onComplete.push(callback))
 }
 
+export const isRunInTransaction = () => {
+  return !!stores.some((store) => !!store.getStore())
+}
+
 export const emitTransactionCommit = () => {
   stores.forEach((store) => {
     store.getStore()?.onCommit.forEach((callback) => { callback() })

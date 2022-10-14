@@ -5,6 +5,7 @@ export declare const addStoreToHooks: (store: AsyncLocalStorage<StoreTransaction
 export declare const runOnTransactionCommit: (callback: HookType) => void;
 export declare const runOnTransactionRollback: (callback: HookType) => void;
 export declare const runOnTransactionComplete: (callback: HookType) => void;
+export declare const isRunInTransaction: () => boolean;
 export declare const emitTransactionCommit: () => void;
 export declare const emitTransactionRollback: () => void;
 export declare const emitTransactionComplete: () => void;

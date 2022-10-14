@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.emitTransactionComplete = exports.emitTransactionRollback = exports.emitTransactionCommit = exports.runOnTransactionComplete = exports.runOnTransactionRollback = exports.runOnTransactionCommit = exports.addStoreToHooks = void 0;
+exports.emitTransactionComplete = exports.emitTransactionRollback = exports.emitTransactionCommit = exports.isRunInTransaction = exports.runOnTransactionComplete = exports.runOnTransactionRollback = exports.runOnTransactionCommit = exports.addStoreToHooks = void 0;
 const stores = [];
 const addStoreToHooks = (store) => {
     stores.push(store);
@@ -18,6 +18,10 @@ const runOnTransactionComplete = (callback) => {
     stores.forEach((store) => { var _a; return (_a = store.getStore()) === null || _a === void 0 ? void 0 : _a.onComplete.push(callback); });
 };
 exports.runOnTransactionComplete = runOnTransactionComplete;
+const isRunInTransaction = () => {
+    return !!stores.some((store) => !!store.getStore());
+};
+exports.isRunInTransaction = isRunInTransaction;
 const emitTransactionCommit = () => {
     stores.forEach((store) => {
         var _a;
