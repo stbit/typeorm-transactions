@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { DataSource, EntityManager } from "typeorm";
 import { IsolationLevel } from "typeorm/driver/types/IsolationLevel";
-import { emitTransactionCommit, emitTransactionComplete, emitTransactionRollback } from "./hooks";
+import { addStoreToHooks, emitTransactionCommit, emitTransactionComplete, emitTransactionRollback } from "./hooks";
 import { StoreTransaction } from "./store";
 import { wrapDataSource } from "./wrap-data-source";
 
@@ -13,6 +13,7 @@ export const factoryTransactionDecorator = (dataSource: DataSource) => {
   const context = new AsyncLocalStorage<StoreTransaction | undefined>()
 
   wrapDataSource(dataSource, context)
+  addStoreToHooks(context)
 
   return function Transactional(options: TransactionalOptions = {}): MethodDecorator {
     const isolationLevel = options.isolationLevel ?? 'READ COMMITTED'

@@ -8,6 +8,7 @@ const wrap_data_source_1 = require("./wrap-data-source");
 const factoryTransactionDecorator = (dataSource) => {
     const context = new node_async_hooks_1.AsyncLocalStorage();
     (0, wrap_data_source_1.wrapDataSource)(dataSource, context);
+    (0, hooks_1.addStoreToHooks)(context);
     return function Transactional(options = {}) {
         var _a;
         const isolationLevel = (_a = options.isolationLevel) !== null && _a !== void 0 ? _a : 'READ COMMITTED';
